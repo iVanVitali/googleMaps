@@ -1,9 +1,58 @@
 /**
  * Created by webcoder on 7/2/17.
  */
-//$(function() {
+$(function() {
     // esta linea indica al navegador que queremos tener cuidad con javascript
-    //"use strict";
+    "use strict";
+
+    function inicializarFirebase() {
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyDK0q-Xdt5fU_S5-wWUvoZFK-khAbPg8w8",
+            authDomain: "project-8658726983422493935.firebaseapp.com",
+            databaseURL: "https://project-8658726983422493935.firebaseio.com",
+            storageBucket: "project-8658726983422493935.appspot.com",
+            messagingSenderId: "964797913787"
+        };
+        firebase.initializeApp(config);
+    }
+
+    // Inicializar Firebase
+    inicializarFirebase();
+
+    const DatabaseService = firebase.database();
+
+    function obtenerLugarDesdeFormulario($formulario) {
+        var lugar = {};
+
+        $.each($formulario.serializeArray(), function(indice, elemento) {
+            lugar[elemento.name] = elemento.value;
+        });
+
+        lugar.creado = new Date().getTime(); // agregar fecha de ingreso
+
+        return lugar;
+    }
+
+    function agregarDisco(ruta, lugar) {
+        var referencia = DatabaseService.ref(ruta);
+        referencia.push(lugar);
+    }
+
+    function resetearFormulario() {
+        $("input[type=text]").val("");
+    }
+
+    $('form#place-form').submit(function(evento) {
+        evento.preventDefault();
+
+        var lugar = obtenerLugarDesdeFormulario($(this));
+        agregarDisco('lugares', lugar);
+        resetearFormulario();
+    });
+
+
+});
 
     // This example displays an address form, using the autocomplete feature
 // of the Google Places API to help users fill in the information.
@@ -64,7 +113,7 @@
         form1 += "</div>";
 
         form1 += "<button type='reset' class='btn btn-default'>Limpiar</button> ";
-        form1 += "<button type='submit' class='btn btn-primary'>Enviar</button>";
+        form1 += "<button type='submit' class='btn btn-primary'>Guardar</button>";
 
         $('#place-form').html(form1);
     }
@@ -102,7 +151,7 @@
         form2 += "</div>";
 
         form2 += "<button type='reset' class='btn btn-default'>Limpiar</button> ";
-        form2 += "<button type='submit' class='btn btn-primary'>Enviar</button>";
+        form2 += "<button type='submit' class='btn btn-primary'>Guardar</button>";
 
         $('#place-form').html(form2);
     }
