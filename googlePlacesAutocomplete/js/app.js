@@ -25,8 +25,18 @@ $(function() {
     function obtenerLugarDesdeFormulario($formulario) {
         var lugar = {};
 
+        for (var component in componentForm) {
+            document.getElementById(component).disabled = false;
+        }
+
         $.each($formulario.serializeArray(), function(indice, elemento) {
-            lugar[elemento.name] = elemento.value;
+            if (elemento.name === "comuna") {
+                // Obtener solo el numero de la comuna
+                lugar[elemento.name] = elemento.value.substring(7);
+            } else {
+                lugar[elemento.name] = elemento.value;
+            }
+
         });
 
         lugar.creado = new Date().getTime(); // agregar fecha de ingreso
@@ -34,7 +44,7 @@ $(function() {
         return lugar;
     }
 
-    function agregarDisco(ruta, lugar) {
+    function agregarLugar(ruta, lugar) {
         var referencia = DatabaseService.ref(ruta);
         referencia.push(lugar);
     }
@@ -47,10 +57,9 @@ $(function() {
         evento.preventDefault();
 
         var lugar = obtenerLugarDesdeFormulario($(this));
-        agregarDisco('lugares', lugar);
+        agregarLugar('lugares', lugar);
         resetearFormulario();
     });
-
 
 });
 
@@ -94,22 +103,22 @@ $(function() {
         var form1 = "";
         form1 += "<div class='form-group'>";
         form1 += "<label for='sublocality_level_1'>Barrio</label>";
-        form1 += "<input type='text' class='form-control' id='sublocality_level_1' name='barrio' placeholder='Barrio de CABA' disabled='true'>";
+        form1 += "<input type='text' class='form-control' id='sublocality_level_1' name='barrio' value='' placeholder='Barrio de CABA' disabled='true'>";
         form1 += "</div>";
 
         form1 += "<div class='form-group'>";
         form1 += "<label for='administrative_area_level_2'>Comuna</label>";
-        form1 += "<input type='text' class='form-control' id='administrative_area_level_2' name='comuna' placeholder='Comuna' disabled='true'>";
+        form1 += "<input type='text' class='form-control' id='administrative_area_level_2' name='comuna' value='' placeholder='Comuna' disabled='true'>";
         form1 += "</div>";
 
         form1 += "<div class='form-group'>";
         form1 += "<label for='administrative_area_level_1'>Provincia</label>";
-        form1 += "<input type='text' class='form-control' id='administrative_area_level_1' name='provincia' placeholder='Provincia' disabled='true'>";
+        form1 += "<input type='text' class='form-control' id='administrative_area_level_1' name='provincia' value='' placeholder='Provincia' disabled='true'>";
         form1 += "</div>";
 
         form1 += "<div class='form-group'>";
         form1 += "<label for='country'>Pais</label>";
-        form1 += "<input type='text' class='form-control' id='country' name='pais' placeholder='Pais' disabled='true'>";
+        form1 += "<input type='text' class='form-control' id='country' name='pais' value='' placeholder='Pais' disabled='true'>";
         form1 += "</div>";
 
         form1 += "<button type='reset' class='btn btn-default'>Limpiar</button> ";
@@ -136,7 +145,7 @@ $(function() {
 
         form2 += "<div class='form-group'>";
         form2 += "<label for='administrative_area_level_2'>Ciudad/Localidad</label>";
-        form2 += "<input type='text' class='form-control' id='administrative_area_level_2' name='comuna' placeholder='Ciudad/Localidad' disabled='true'>";
+        form2 += "<input type='text' class='form-control' id='administrative_area_level_2' name='localidad' placeholder='Ciudad/Localidad' disabled='true'>";
         form2 += "</div>";
 
         form2 += "<div class='form-group'>";
@@ -173,9 +182,14 @@ $(function() {
         if(barrioCaba) {
             // Mostrar formulario 1
             showForm1();
+            console.log('form1');
+            //alert("form1");
+            //mostrarFormulario();
         } else {
             // Mostrar formulario 2
             showForm2();
+            console.log('form2');
+            //mostrarFormulario();
         }
 
         for (var component in componentForm) {
@@ -193,6 +207,16 @@ $(function() {
                 document.getElementById(addressType).value = val;
             }
         }
+
+        //mostrarFormulario();
+    }
+
+
+    function mostrarFormulario() {
+        $("#place-form").find(':input').each(function() {
+            var elemento = this;
+            console.log("elemento.id="+ elemento.id + ", elemento.name=" + elemento.name + ", elemento.value=" + elemento.value);
+        });
     }
 // [END region_fillform]
 
